@@ -14,6 +14,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  var _email = '';
+  var _password = '';
+
+  void _submit() async {
+    _formKey.currentState!.save();
+    print(_email);
+    print(_password);
+  }
 
   void _showErrorDialog(String error) {
     showDialog(
@@ -86,43 +95,56 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(
                           height: 30,
                         ),
-                        SizedBox(
-                          width: 350,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                hintText: _hintText,
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8))),
-                                prefixIcon: Icon(Icons.person_2_rounded),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        SizedBox(
-                          width: 350,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _passwordController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                hintText: _hintTextPassword,
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8))),
-                                prefixIcon: Icon(Icons.lock),
-                              ),
-                            ),
-                          ),
-                        ),
+                        Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: 350,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: _emailController,
+                                      keyboardType: TextInputType.emailAddress,
+                                      onSaved: (newValue) {
+                                        _email = newValue!;
+                                      },
+                                      decoration: const InputDecoration(
+                                        hintText: _hintText,
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(8))),
+                                        prefixIcon:
+                                            Icon(Icons.person_2_rounded),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 350,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: _passwordController,
+                                      obscureText: true,
+                                      onSaved: (newValue) {
+                                        _password = newValue!;
+                                      },
+                                      decoration: const InputDecoration(
+                                        hintText: _hintTextPassword,
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(8))),
+                                        prefixIcon: Icon(Icons.lock),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -165,17 +187,6 @@ class _LoginPageState extends State<LoginPage> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const RegisterPage()));
-
-                                    // String email = _emailController.text;
-                                    // String password = _passwordController.text;
-
-                                    // User? user = await signUp(email, password);
-
-                                    // if (user != null) {
-                                    //   print("Kayıt başarılı: ${user.email}");
-                                    // } else {
-                                    //   print("Kayıt başarısız");
-                                    // }
                                   },
                                   child: const Text(
                                     _registerText,
@@ -184,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
