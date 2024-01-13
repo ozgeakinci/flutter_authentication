@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebaseexample/homePage.dart';
-import 'package:firebaseexample/signUp_page.dart';
+import 'package:firebaseexample/home_page.dart';
 
+import 'package:firebaseexample/signUp_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+final firebaseAuthInstance = FirebaseAuth.instance;
 
 class SignInPage extends StatefulWidget {
   @override
@@ -10,53 +13,41 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  FocusNode myFocusNode = FocusNode();
+  var _email = '';
+  var _password = '';
 
-  final TextEditingController _passwordController = TextEditingController();
-
-  void _showErrorDialog(String error) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Hata'),
-            content: Text(error),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Tamam"))
-            ],
-          );
-        });
+  void _submit() async {
+    try {
+      _formKey.currentState!.save();
+      UserCredential _userCredential =
+          await firebaseAuthInstance.signInWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.message ?? 'Kayıt Başarısız')));
+    }
   }
 
-  Future<void> _signIn() async {
-    final String email = _emailController.text.trim();
-    final String password = _passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      _showErrorDialog("Lütfen kullanıcı adı ve şifre giriniz.");
-      return;
-    }
+  void _signInWithGoogle() async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      User? user = userCredential.user;
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-      if (user != null) {
-        print("Giriş başarılı: ${user.email}");
-      } else {
-        _showErrorDialog(
-            "Giriş başarısız. Lütfen kullanıcı adı ve şifrenizi kontrol edin.");
-      }
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+
+      final UserCredential userCredential =
+          await firebaseAuthInstance.signInWithCredential(credential);
+
+      print(userCredential.user?.email);
     } on FirebaseAuthException catch (e) {
-      _showErrorDialog("Bir hata oluştu: ${e.message}");
+      print(e);
     }
   }
 
@@ -207,58 +198,70 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                   ),
+
+                  // Form Area
                   Positioned(
-                    left: 36,
-                    top: 396,
-                    child: Container(
-                      width: 340,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child: TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 20) +
-                                  const EdgeInsets.only(left: 40),
-                          hintText: _hintText,
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 36,
-                    top: 476,
-                    child: Container(
-                      width: 340,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 20) +
-                                  const EdgeInsets.only(left: 40),
-                          hintText: _hintTextPassword,
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
+                    top: 390,
+                    left: 30,
+                    child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 340,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white),
+                              child: TextFormField(
+                                focusNode: myFocusNode,
+                                keyboardType: TextInputType.emailAddress,
+                                onSaved: (newValue) {
+                                  _email = newValue!;
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 20) +
+                                          const EdgeInsets.only(left: 40),
+                                  hintText: _hintText,
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              width: 340,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white),
+                              child: TextFormField(
+                                obscureText: true,
+                                onSaved: (newValue) {
+                                  _password = newValue!;
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 20) +
+                                          const EdgeInsets.only(left: 40),
+                                  hintText: _hintTextPassword,
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
                   ),
                   Positioned(
                     left: 275,
                     top: 560,
                     child: InkWell(
                       onTap: () {
-                        _signIn();
-                        if (_emailController.text.isNotEmpty ||
-                            _passwordController.text.isNotEmpty)
+                        _submit();
+                        // _signIn();
+                        if (_email.isNotEmpty || _password.isNotEmpty)
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -278,6 +281,16 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                   ),
+
+                  Positioned(
+                      top: 650,
+                      left: 40,
+                      child: TextButton.icon(
+                          onPressed: () {
+                            _signInWithGoogle();
+                          },
+                          label: Text('hey'),
+                          icon: Icon(Icons.sign_language_outlined)))
                 ],
               ),
             ),

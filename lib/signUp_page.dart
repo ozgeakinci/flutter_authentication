@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebaseexample/homePage.dart';
-import 'package:firebaseexample/logIn_page.dart';
+import 'package:firebaseexample/signin_page.dart';
 import 'package:flutter/material.dart';
+
+final firebaseAutInstance = FirebaseAuth.instance;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -11,22 +12,25 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<SignUpPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _passwordController = TextEditingController();
 
-  Future<User?> signUp(String email, String password) async {
+  final _formKey = GlobalKey<FormState>();
+  var _email = '';
+  var _password = '';
+
+  void _onSubmit() async {
+    _formKey.currentState!.save();
+
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await firebaseAutInstance
+          .createUserWithEmailAndPassword(email: _email, password: _password);
 
-      User? user = userCredential.user;
-      return user;
-    } on FirebaseAuthException catch (e) {
-      print("Kayıt hatası: ${e.message}");
-      return null;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Kayıt başarılı')));
+    } on FirebaseAuthException catch (error) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.message!)));
     }
   }
 
@@ -150,65 +154,66 @@ class _RegisterPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  //********************* FORM AREA ********************
                   Positioned(
-                    left: 36,
-                    top: 396,
-                    child: Container(
-                      width: 340,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child: TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 20) +
-                                  const EdgeInsets.only(left: 40),
-                          hintText: _hintText,
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 36,
-                    top: 476,
-                    child: Container(
-                      width: 340,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white),
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 20) +
-                                  const EdgeInsets.only(left: 40),
-                          hintText: _hintTextPassword,
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
+                    top: 390,
+                    left: 30,
+                    child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 340,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white),
+                              child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
+                                onSaved: (newValue) {
+                                  _email = newValue!;
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 20) +
+                                          const EdgeInsets.only(left: 40),
+                                  hintText: _hintText,
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              width: 340,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white),
+                              child: TextFormField(
+                                obscureText: true,
+                                onSaved: (newValue) {
+                                  _password = newValue!;
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 20) +
+                                          const EdgeInsets.only(left: 40),
+                                  hintText: _hintTextPassword,
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
                   ),
                   Positioned(
                     left: 275,
                     top: 560,
                     child: InkWell(
-                      onTap: () async {
-                        String email = _emailController.text;
-                        String password = _passwordController.text;
-
-                        User? user = await signUp(email, password);
-
-                        if (user != null) {
-                          print("Kayıt başarılı: ${user.email}");
-                        } else {
-                          print("Kayıt başarısız");
-                        }
+                      onTap: () {
+                        _onSubmit();
                       },
                       child: Container(
                         width: 70,

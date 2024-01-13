@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "980847129235",
+    "firebase_url": "https://fultter-startter-default-rtdb.firebaseio.com",
     "project_id": "fultter-startter",
     "storage_bucket": "fultter-startter.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.firebaseexample"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "980847129235-89c4crve6bhp8asl72rjjgc1a135dvl9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebaseexample",
+            "certificate_hash": "2519624053800066ec9ff634f5559c873c36e670"
+          }
+        },
+        {
+          "client_id": "980847129235-b2lt332p8tb5k67frgtfo7qoke2oc2pa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA41PLJZNOwXydrMwqI1tLTObXRmISaAlc"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980847129235-b2lt332p8tb5k67frgtfo7qoke2oc2pa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "980847129235-0qgi9kb5hbafhbf16cruumtt82tijr2b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.firebaseexample"
+              }
+            }
+          ]
         }
       }
     }
