@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebaseexample/signin_page.dart';
 import 'package:flutter/material.dart';
 
 final firebaseAutInstance = FirebaseAuth.instance;
+final firebaseFirestore = FirebaseFirestore.instance;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -12,9 +14,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<SignUpPage> {
-  // final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _passwordController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
   var _email = '';
   var _password = '';
@@ -25,6 +24,16 @@ class _RegisterPageState extends State<SignUpPage> {
     try {
       UserCredential userCredential = await firebaseAutInstance
           .createUserWithEmailAndPassword(email: _email, password: _password);
+
+      //yeni bir collection oluşturmak için
+
+      firebaseFirestore
+          .collection('users')
+          //id oluşturmazsan otamatik atıyor
+          .doc(userCredential.user!.uid)
+          .set({
+        'email': _email,
+      });
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Kayıt başarılı')));

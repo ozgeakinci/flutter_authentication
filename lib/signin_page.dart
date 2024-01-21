@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebaseexample/home_page.dart';
+import 'package:firebaseexample/homepage.dart';
 
 import 'package:firebaseexample/signUp_page.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +127,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const Positioned(
                     left: 36,
-                    top: 579,
+                    top: 575,
                     child: Text(
                       'Sign in',
                       style: TextStyle(
@@ -142,7 +142,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   Positioned(
                     left: 36,
-                    top: 755,
+                    top: 775,
                     child: Container(
                       width: 78,
                       height: 9,
@@ -152,7 +152,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   Positioned(
                     left: 180,
-                    top: 755,
+                    top: 775,
                     child: Container(
                       width: 180,
                       height: 9,
@@ -162,7 +162,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   Positioned(
                     left: 41,
-                    top: 740,
+                    top: 760,
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
@@ -185,7 +185,7 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const Positioned(
                     left: 184,
-                    top: 740,
+                    top: 760,
                     child: Text(
                       'Forgot Passwords',
                       style: TextStyle(
@@ -265,11 +265,11 @@ class _SignInPageState extends State<SignInPage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => const HomepageNew()));
                       },
                       child: Container(
-                        width: 70,
-                        height: 70,
+                        width: 65,
+                        height: 65,
                         decoration: BoxDecoration(
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(100)),
@@ -283,14 +283,27 @@ class _SignInPageState extends State<SignInPage> {
                   ),
 
                   Positioned(
-                      top: 650,
-                      left: 40,
-                      child: TextButton.icon(
-                          onPressed: () {
-                            _signInWithGoogle();
-                          },
-                          label: Text('hey'),
-                          icon: Icon(Icons.sign_language_outlined)))
+                      top: 660,
+                      left: 50,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            fixedSize: Size(280, 45),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            )),
+                        onPressed: () {
+                          _signInWithGoogle();
+                        },
+                        icon: Padding(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Image.asset(
+                              'assets/img/google_icon.png',
+                            )),
+                        label: Padding(
+                            padding: EdgeInsets.only(left: 0),
+                            child: Text('Sign in with Google')),
+                      ))
                 ],
               ),
             ),
